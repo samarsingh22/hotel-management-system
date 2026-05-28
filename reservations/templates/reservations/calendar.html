@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reservation Calendar</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f0f2f5; 
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ===== HEADER / NAVBAR ===== */
+        .header {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 18px;
+            color: #d9335a;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .nav-links span { cursor: pointer; }
+        .nav-links .active { color: #d9335a; font-weight: 600; }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-new {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: #6c5ce7;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            background: #4a4a4a;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toolbar i { cursor: pointer; font-size: 13px; }
+        .date-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.15);
+            padding: 3px 12px;
+            border-radius: 4px;
+        }
+        .date-nav span { font-weight: 600; }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 110px);
+        }
+
+        /* ===== LEFT PANEL - LISTINGS ===== */
+        .listings-panel {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        .search-box {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .listing-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.2s;
+        }
+        .listing-item:hover { background: #f8f9fa; }
+        .listing-item.active { background: #e8f0fe; }
+        .listing-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid #ddd;
+        }
+        .listing-title {
+            font-size: 13px;
+            font-weight: 500;
+            flex: 1;
+        }
+        .listing-menu { color: #999; font-size: 14px; }
+
+        /* ===== RIGHT PANEL - CALENDAR ===== */
+        .calendar-panel {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            padding: 10px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .calendar-month-label {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 0 5px 10px;
+            color: #555;
+        }
+
+        /* ===== CALENDAR GRID ===== */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: visible !important;
+            font-size: 12px;
+        }
+        .day-header {
+            padding: 8px 0;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+        .day-cell {
+            min-height: 88px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 4px;
+            position: relative;
+            overflow: visible !important;
+        }
+        .day-cell:nth-child(7n) { border-right: none; }
+        .day-number {
+            font-size: 11px;
+            color: #999;
+            position: absolute;
+            top: 4px;
+            right: 6px;
+        }
+        .day-cell.today .day-number {
+            background: #d9335a;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        /* ===== RESERVATION BAR ===== */
+        .reservation-bar {
+            position: absolute;
+            height: 26px;
+            background: #5db5b0;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding: 2px 6px;
+            gap: 6px;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            z-index: 1;
+            /* Dynamic positioning */
+            left: 0;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .reservation-bar .guest-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.5);
+            flex-shrink: 0;
+        }
+        .reservation-bar .guest-avatar-placeholder {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a8a86;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .reservation-bar .guest-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 9px;
+        }
+        .reservation-bar .bar-menu {
+            font-size: 8px;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        /* ===== SCROLLBAR STYLING ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .listings-panel { width: 150px; }
+            .day-cell { min-height: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">FavHost</div>
+            <div class="nav-links">
+                <span>Dashboard</span>
+                <span class="active">Calendar</span>
+                <span>Reservations</span>
+                <span>Listing</span>
+                <span>Tasks</span>
+                <span>Enquiries (3)</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn-new">New +</button>
+            <div class="avatar-small">S</div>
+        </div>
+    </div>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <i class="fas fa-bars"></i>
+            <span>Calendar - Timeline view</span>
+        </div>
+        <div class="toolbar-left">
+            <div class="date-nav">
+                <i class="fas fa-chevron-left"></i>
+                <span id="monthLabel">February 2026</span>
+                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-calendar-alt" style="margin-left:8px;"></i>
+            </div>
+        </div>
+        <div class="toolbar-right">
+            <i class="fas fa-sync-alt"></i>
+            <i class="fas fa-download"></i>
+            <i class="fas fa-list"></i>
+            <i class="fas fa-th-large"></i>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="main-container">
+
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="listings-panel">
+            <div class="search-box">
+                <input type="text" placeholder="Search listings" id="searchInput">
+            </div>
+            <div id="listingsList">
+                <!-- Listings will be rendered here by Django -->
+                {% for listing in listings %}
+                <div class="listing-item" data-id="{{ listing.id }}" onclick="selectListing('{{ listing.id }}')">
+                    {% if listing.room_image %}
+                    <img src="{{ listing.room_image.url }}" class="listing-img" alt="{{ listing.room_title }}">
+                    {% else %}
+                    <div class="listing-img" style="background:#ddd; display:flex; align-items:center; justify-content:center; font-size:10px; color:#666;">No img</div>
+                    {% endif %}
+                    <div class="listing-title">{{ listing.room_title }}</div>
+                    <div class="listing-menu"><i class="fas fa-ellipsis-v"></i></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ===== CALENDAR PANEL ===== -->
+        <div class="calendar-panel">
+            <div class="calendar-month-label">March 2018</div>
+            <div id="calendarContainer">
+                <!-- Calendar will be rendered by JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // =============================================
+        // DATA STATE
+        // =============================================
+        let currentYear = parseInt("{{ year|default:2026 }}");
+        let currentMonth = parseInt("{{ month|default:1 }}");
+        let selectedListingId = null;
+        let reservationsData = [];
+
+        // =============================================
+        // CALENDAR RENDERING
+        // =============================================
+        function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Update month label
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('monthLabel').textContent = 
+                monthNames[currentMonth - 1] + ' ' + currentYear;
+
+            // Build grid
+            let html = '<div class="calendar-grid">';
+            
+            // Day headers
+            const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            dayHeaders.forEach(day => {
+                html += `<div class="day-header">${day}</div>`;
+            });
+            
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="day-cell"></div>';
+            }
+            
+            // Day cells
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = (day === today.getDate() && 
+                                currentMonth === today.getMonth() + 1 && 
+                                currentYear === today.getFullYear());
+                
+                html += `<div class="day-cell ${isToday ? 'today' : ''}" data-day="${day}">`;
+                html += `<div class="day-number">${day}</div>`;
+                
+                // ===== RESERVATION RENDERING =====
+                const dateStr = `${currentYear}-${String(currentMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                // Find reservations that are active on this day
+                const activeReservations = reservationsData.filter(res => {
+                    return dateStr >= res.checkin && dateStr < res.checkout;
+                });
+                
+                // Only render on the checkin date (first day)
+                const startingReservations = activeReservations.filter(res => {
+                    return res.checkin === dateStr;
+                });
+                
+                // Render each reservation as a single continuous bar with proper positioning
+                startingReservations.forEach((res, index) => {
+                    const checkinDate = new Date(res.checkin);
+                    const checkoutDate = new Date(res.checkout);
+                    
+                    // Calculate total days (including partial)
+                    const totalDays = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
+                    
+                    // Position: starts at 50% of checkin day, ends at 50% of checkout day
+                    // Bar width: (totalDays * 100%) - 50% (start offset) + 50% (end offset)
+                    // Simplified: barWidth = totalDays * 100%
+                    const barWidth = totalDays * 100;
+                    
+                    // Calculate left position (starts at 50% of checkin day)
+                    const leftPosition = 50; // percentage
+                    
+                    const initial = res.guest_name.charAt(0).toUpperCase();
+                    const zIndex = index + 1;
+                    
+                    // Calculate top position with stacking for multiple reservations
+                    const topPosition = 25 + (index * 30);
+                    
+                    // Check if this is the last day of the month
+                    const isLastDayOfMonth = day === daysInMonth;
+                    
+                    // Check if reservation extends beyond current month
+                    const extendsBeyondMonth = dateStr < res.checkout && isLastDayOfMonth;
+                    
+                    // Adjust for rightmost edge (last day of month or last day of reservation)
+                    let additionalStyle = '';
+                    if (extendsBeyondMonth) {
+                        // Reservation continues to next month - show with dashed border
+                        additionalStyle = 'border-right: 2px dashed rgba(255,255,255,0.5);';
+                    } else if (dateStr === res.checkout) {
+                        // This is the checkout day - bar should end at 50%
+                        // No special handling needed as bar width already accounts for this
+                    }
+                    
+                    html += `
+                        <div class="reservation-bar" style="
+                            left: ${leftPosition}%;
+                            width: ${barWidth}%;
+                            top: ${topPosition}px;
+                            z-index: ${zIndex};
+                            ${additionalStyle}
+                        ">
+                            ${res.guest_photo ? 
+                                `<img src="${res.guest_photo}" class="guest-avatar">` : 
+                                `<div class="guest-avatar-placeholder">${initial}</div>`
+                            }
+                            <span class="guest-name">${res.guest_name}</span>
+                            <span class="bar-menu"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+            
+            // Fill remaining cells
+            const totalCells = firstDay + daysInMonth;
+            const remaining = (7 - (totalCells % 7)) % 7;
+            for (let i = 0; i < remaining; i++) {
+                html += '<div class="day-cell"></div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        // FETCH RESERVATIONS
+        // =============================================
+        function fetchReservations() {
+            let url = `/api/reservations/?year=${currentYear}&month=${currentMonth}`;
+            if (selectedListingId) {
+                url += `&listing_id=${selectedListingId}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    reservationsData = data;
+                    renderCalendar();
+                })
+                .catch(error => {
+                    console.error('Error fetching reservations:', error);
+                });
+        }
+
+        // =============================================
+        // SELECT LISTING
+        // =============================================
+        function selectListing(listingId) {
+            selectedListingId = listingId;
+            
+            // Update active state in left panel
+            document.querySelectorAll('.listing-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            const selectedEl = document.querySelector(`.listing-item[data-id="${listingId}"]`);
+            if (selectedEl) {
+                selectedEl.classList.add('active');
+            }
+            
+            fetchReservations();
+        }
+
+        // =============================================
+        // NAVIGATION CONTROLS
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Left arrow click
+            const leftArrow = document.querySelector('.fa-chevron-left');
+            if (leftArrow) {
+                leftArrow.parentElement.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('fa-chevron-left')) {
+                        currentMonth--;
+                        if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+                        fetchReservations();
+                    }
+                });
+            }
+            
+            // Right arrow click
+            const rightArrow = document.querySelector('.fa-chevron-right');
+            if (rightArrow) {
+                rightArrow.parentElement.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('fa-chevron-right')) {
+                        currentMonth++;
+                        if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+                        fetchReservations();
+                    }
+                });
+            }
+
+            // Search filter
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    document.querySelectorAll('.listing-item').forEach(el => {
+                        const title = el.querySelector('.listing-title').textContent.toLowerCase();
+                        el.style.display = title.includes(searchTerm) ? 'flex' : 'none';
+                    });
+                });
+            }
+
+            // Select first listing by default
+            const firstListing = document.querySelector('.listing-item');
+            if (firstListing) {
+                selectListing(firstListing.dataset.id);
+            } else {
+                fetchReservations();
+            }
+        });
+    </script>
+
+</body>
+</html>
