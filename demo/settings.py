@@ -1,3 +1,5 @@
+import dj_database_url
+import os
 """
 Django settings for demo project.
 """
@@ -59,14 +61,9 @@ WSGI_APPLICATION = 'demo.wsgi.application'
 # Database - FIXED with actual PostgreSQL connection
 # IMPORTANT: Update these values with your actual PostgreSQL credentials
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'demo_db',
-        'USER': 'postgres',  # Change this to your PostgreSQL username
-        'PASSWORD': 'Samar@2006',  # Change this to your PostgreSQL password
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
+    )
 }
 
 # Media files configuration (for images)
