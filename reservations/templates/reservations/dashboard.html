@@ -922,20 +922,17 @@
             const gridRect = grid.getBoundingClientRect();
             const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-            const monthStart = new Date(currentYear, currentMonth - 1, 1);
-            const monthEnd = new Date(currentYear, currentMonth, 0);
+            const msNum = currentYear * 10000 + currentMonth * 100 + 1;
+            const meNum = currentYear * 10000 + currentMonth * 100 + daysInMonth;
 
             for (const res of reservations) {
-                const checkinDate = new Date(res.checkin + 'T00:00:00');
-                const checkoutDate = new Date(res.checkout + 'T00:00:00');
+                const cinNum = parseInt(res.checkin.replace(/-/g, ''), 10);
+                const coutNum = parseInt(res.checkout.replace(/-/g, ''), 10);
 
-                const startDate = checkinDate < monthStart ? new Date(monthStart) : checkinDate;
-                const endDate = checkoutDate > monthEnd ? new Date(monthEnd) : checkoutDate;
+                if (cinNum > meNum || coutNum < msNum) continue;
 
-                if (startDate > monthEnd || endDate < monthStart) continue;
-
-                const startDay = startDate.getDate();
-                const endDay = endDate.getDate();
+                const startDay = cinNum < msNum ? 1 : parseInt(res.checkin.substring(8), 10);
+                const endDay = coutNum > meNum ? daysInMonth : parseInt(res.checkout.substring(8), 10);
 
                 let currentDay = startDay;
                 while (currentDay <= endDay) {
