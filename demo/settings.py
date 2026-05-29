@@ -14,7 +14,35 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ALLOWED_HOSTS = ["Excellent. This is actually a very easy fix.
+
+Your deployment worked.
+
+The important lines are:
+
+==> Build successful 🎉
+==> Your service is live 🎉
+
+The only problem is:
+
+Invalid HTTP_HOST header:
+'hotel-management-system-deb.onrender.com'
+
+That means Django is rejecting requests because:
+
 ALLOWED_HOSTS = []
+
+is still active on Render.
+
+Fix
+
+In settings.py, change:
+
+ALLOWED_HOSTS = []
+
+to either:
+
+ALLOWED_HOSTS = ["hotel-management-system-deb.onrender.com"]
 
 # Application definition - FIXED (only one definition)
 INSTALLED_APPS = [
