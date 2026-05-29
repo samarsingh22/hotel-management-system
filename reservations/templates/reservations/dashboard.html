@@ -1014,7 +1014,7 @@
                             `<div class="guest-avatar-placeholder">${initial}</div>`
                         }
                         <span class="guest-name">${res.guest_name}</span>
-                        ${currentDay === startDay && checkinExtra > 0 ? `<span class="count-badge">+${checkinExtra}</span>` : ''}
+                        ${isCheckoutSegment && checkinExtra > 0 ? `<span class="count-badge">+${checkinExtra}</span>` : ''}
                     `;
 
                     bar.style.left = barLeft + 'px';
@@ -1288,26 +1288,49 @@
                     e.preventDefault();
                     const btn = e.target.querySelector('.btn-submit');
                     btn.textContent = 'Creating...'; btn.disabled = true;
+                    const modal = document.getElementById('createModal');
                     const formData = new FormData(e.target);
                     fetch('/api/listings/create/', {method: 'POST', body: formData})
                         .then(r => r.json())
                         .then(function(data) {
                             if (data.error) { alert(data.error); btn.textContent = 'Create'; btn.disabled = false; return; }
-                            document.getElementById('createModal').classList.remove('active');
-                            location.reload();
+                            modal.classList.remove('active');
+                            // Add to LISTINGS_DATA
+                            LISTINGS_DATA.push({id: data.id, title: data.room_title});
+                            // Add sidebar item
+                            var list = document.getElementById('listingsList');
+                            var imgHtml = data.room_image
+                                ? '<img src="' + data.room_image + '" class="listing-img" alt="' + data.room_title + '">'
+                                : '<div class="listing-img" style="background:#ddd; display:flex; align-items:center; justify-content:center; font-size:10px; color:#666;">No img</div>';
+                            list.insertAdjacentHTML('beforeend',
+                                '<div class="listing-item" data-id="' + data.id + '">'
+                                + imgHtml
+                                + '<div class="listing-title">' + data.room_title + '</div>'
+                                + '<div class="listing-menu"><i class="fas fa-ellipsis-v"></i></div>'
+                                + '</div>');
+                            btn.textContent = 'Create'; btn.disabled = false;
+                        })
+                        .catch(function() {
+                            btn.textContent = 'Create'; btn.disabled = false;
+                            modal.classList.remove('active');
                         });
                 }
                 if (e.target.id === 'createReservationForm') {
                     e.preventDefault();
                     const btn = e.target.querySelector('.btn-submit');
                     btn.textContent = 'Creating...'; btn.disabled = true;
+                    const modal = document.getElementById('createModal');
                     const formData = new FormData(e.target);
                     fetch('/api/reservations/create/', {method: 'POST', body: formData})
                         .then(r => r.json())
                         .then(function(data) {
                             if (data.error) { alert(data.error); btn.textContent = 'Create'; btn.disabled = false; return; }
-                            document.getElementById('createModal').classList.remove('active');
+                            modal.classList.remove('active');
                             fetchDashboardData();
+                        })
+                        .catch(function() {
+                            btn.textContent = 'Create'; btn.disabled = false;
+                            modal.classList.remove('active');
                         });
                 }
             });
