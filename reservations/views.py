@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from .models import Listing, Reservation
 from datetime import datetime, timedelta
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
 
 def calendar_view(request):
     listings = Listing.objects.all()
@@ -115,3 +116,52 @@ def get_reservations(request):
         })
     
     return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+def create_listing(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    title = request.POST.get('room_title')
+    if not title:
+        return JsonResponse({'error': 'Room title is required'}, status=400)
+    image = request.FILES.get('room_image')
+    listing = Listing.objects.create(room_title=title, room_image=image)
+    return JsonResponse({
+        'id': listing.id,
+        'room_title': listing.room_title,
+        'room_image': listing.room_image.url if listing.room_image else '',
+    })
+
+
+@csrf_exempt
+def create_reservation(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    listing_id = request.POST.get('listing_id')
+    guest_name = request.POST.get('guest_name')
+    guest_photo = request.FILES.get('guest_photo')
+    checkin_date = request.POST.get('checkin_date')
+    checkout_date = request.POST.get('checkout_date')
+    if not all([listing_id, guest_name, checkin_date, checkout_date]):
+        return JsonResponse({'error': 'Missing required fields'}, status=400)
+    try:
+        listing = Listing.objects.get(id=listing_id)
+    except Listing.DoesNotExist:
+        return JsonResponse({'error': 'Listing not found'}, status=404)
+    reservation = Reservation.objects.create(
+        listing=listing,
+        guest_name=guest_name,
+        guest_photo=guest_photo,
+        checkin_date=checkin_date,
+        checkout_date=checkout_date,
+    )
+    return JsonResponse({
+        'id': reservation.id,
+        'guest_name': reservation.guest_name,
+        'guest_photo': reservation.guest_photo.url if reservation.guest_photo else '',
+        'listing_id': listing.id,
+        'room_title': listing.room_title,
+        'checkin': reservation.checkin_date.strftime('%Y-%m-%d'),
+        'checkout': reservation.checkout_date.strftime('%Y-%m-%d'),
+    })

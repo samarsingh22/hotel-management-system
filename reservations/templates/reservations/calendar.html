@@ -6,6 +6,8 @@
     <title>Hotel Reservation Calendar</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <style>
         /* ===== RESET & BASE ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,64 +21,156 @@
 
         /* ===== HEADER / NAVBAR ===== */
         .header {
-            background: white;
-            border-bottom: 1px solid #ddd;
-            padding: 0 20px;
-            height: 60px;
+            background: #ffffff;
+            height: 56px;
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 0 24px;
         }
         .header-left {
             display: flex;
             align-items: center;
-            gap: 20px;
         }
         .logo {
-            font-weight: 700;
-            font-size: 18px;
-            color: #d9335a;
-        }
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            font-size: 12px;
-            color: #666;
-        }
-        .nav-links span { cursor: pointer; }
-        .nav-links .active { color: #d9335a; font-weight: 600; }
-        .header-right {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
-        .btn-new {
-            background: #222;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .avatar-small {
-            width: 32px;
+        .logo img {
             height: 32px;
-            border-radius: 50%;
-            background: #ddd;
+            width: auto;
+        }
+        .logo-fallback {
+            font-weight: 700;
+            font-size: 18px;
+            color: #111;
+        }
+        .logo-fallback .logo-red {
+            color: #e11d48;
+        }
+        .header-center {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
+            gap: 0;
+        }
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 0 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6b7280;
+            position: relative;
+            height: 56px;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .nav-tab:hover {
+            color: #111;
+        }
+        .nav-tab.active {
+            color: #111;
+            font-weight: 500;
+        }
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #111;
+        }
+        .nav-tab i {
+            font-size: 18px;
+        }
+        .nav-tab .tab-label {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .enquiries-badge {
+            background: #e11d48;
             color: white;
-            background: #6c5ce7;
+            font-size: 10px;
+            border-radius: 99px;
+            padding: 1px 5px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-new {
+            background: #474747;
+            color: #fff;
+            border: none;
+            border-radius: 99px;
+            padding: 6px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: opacity 0.15s;
+        }
+        .btn-new:hover {
+            opacity: 0.85;
+        }
+        .btn-new i {
+            font-size: 14px;
+        }
+        .new-btn-wrapper { position: relative; }
+        .new-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 200;
+            min-width: 170px;
+            padding: 4px 0;
+            margin-top: 4px;
+        }
+        .new-dropdown.show { display: block; }
+        .new-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+        .new-dropdown-item:hover { background: #f5f5f5; }
+        .new-dropdown-item i { font-size: 16px; color: #666; }
+        .avatar-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-circle i {
+            font-size: 16px;
+            color: #6b7280;
         }
 
         /* ===== TOOLBAR ===== */
         .toolbar {
-            background: #4a4a4a;
+            background: #5d5c5c;
             padding: 8px 20px;
             display: flex;
             align-items: center;
@@ -95,20 +189,126 @@
             gap: 12px;
         }
         .toolbar i { cursor: pointer; font-size: 13px; }
-        .date-nav {
+        .toolbar-center-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .toolbar-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #d1d5db;
+            border-radius: 9px;
+            padding: 6px 14px;
+            gap: 12px;
+            height: 35px;
+            box-shadow: none;
+            position: relative;
+        }
+        .pill-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.15);
-            padding: 3px 12px;
-            border-radius: 4px;
+            justify-content: center;
+            padding: 0;
+            color: #374151;
         }
-        .date-nav span { font-weight: 600; }
+        .pill-btn:hover { color: #111; }
+        .pill-btn i { font-size: 22px; }
+        .pill-btn:last-of-type i { font-size: 20px; }
+        .pill-divider {
+            width: 1.5px;
+            height: 24px;
+            background: #d1d5db;
+            border-radius: 1px;
+            margin: 0 2px;
+        }
+        .toolbar-pill #monthLabel {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            min-width: 130px;
+            text-align: center;
+            white-space: nowrap;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .calendar-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+            padding: 12px 14px;
+            width: 220px;
+            z-index: 1000;
+            display: none;
+        }
+        .calendar-dropdown.show { display: block; }
+        .cd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cd-header i {
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            color: #555;
+        }
+        .cd-header i:hover { background: #f0f0f0; }
+        .cd-header span { font-weight: 600; font-size: 14px; color: #222; }
+        .cd-header select {
+            border: none;
+            background: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #222;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
+            margin-left: 2px;
+        }
+        .cd-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .cd-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+        .cd-grid span {
+            padding: 5px 0;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: #333;
+        }
+        .cd-grid span:hover { background: #f0f0f0; }
+        .cd-grid span.cd-today { background: #7CD1C8; color: #fff; font-weight: 600; }
+        .cd-grid span.cd-other { color: #ccc; }
+        .cd-grid span.cd-empty { cursor: default; }
 
         /* ===== MAIN LAYOUT ===== */
         .main-container {
             display: flex;
-            height: calc(100vh - 110px);
+            height: calc(100vh - 106px);
         }
 
         /* ===== LEFT PANEL - LISTINGS ===== */
@@ -162,7 +362,6 @@
             overflow-y: auto;
             padding: 10px;
             position: relative;
-            overflow-x: hidden;
         }
         .calendar-month-label {
             font-size: 16px;
@@ -179,6 +378,7 @@
             border-radius: 4px;
             overflow: visible !important;
             font-size: 12px;
+            position: relative;
         }
         .day-header {
             padding: 8px 0;
@@ -234,11 +434,13 @@
             overflow: hidden;
             white-space: nowrap;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            z-index: 1;
-            /* Dynamic positioning */
-            left: 0;
-            width: 100%;
-            margin: 0 auto;
+            z-index: 10;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background 0.2s ease-out;
+        }
+        .reservation-bar:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            background: #6cc4bf;
         }
         .reservation-bar .guest-avatar {
             width: 20px;
@@ -266,16 +468,181 @@
             text-overflow: ellipsis;
             font-size: 9px;
         }
-        .reservation-bar .bar-menu {
+        .reservation-bar .count-badge {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 1px 6px;
             font-size: 8px;
-            opacity: 0.7;
+            font-weight: 600;
             flex-shrink: 0;
+            margin-left: auto;
         }
-
         /* ===== SCROLLBAR STYLING ===== */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+        }
+        .modal-close:hover { color: #333; }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        .modal-body { font-size: 14px; color: #555; }
+        .modal-booking {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-booking:last-child { border-bottom: none; }
+        .modal-booking img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .create-form { padding: 4px 0; }
+        .create-form .form-group { margin-bottom: 16px; }
+        .create-form .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .create-form .form-group input,
+        .create-form .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 13px;
+            box-sizing: border-box;
+            background: #f9fafb;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .create-form .form-group input:focus,
+        .create-form .form-group select:focus {
+            outline: none;
+            border-color: #5db5b0;
+            box-shadow: 0 0 0 3px rgba(93, 181, 176, 0.12);
+            background: #fff;
+        }
+        .create-form .form-group input[type="file"] {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+        .create-form .form-group input[type="file"]::file-selector-button {
+            background: #e5e7eb;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        .create-form .form-group input[type="file"]::file-selector-button:hover { background: #d1d5db; }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .form-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.15s;
+        }
+        .form-actions .btn-cancel {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .form-actions .btn-cancel:hover { background: #e5e7eb; }
+        .form-actions .btn-submit {
+            background: #5db5b0;
+            color: #fff;
+        }
+        .form-actions .btn-submit:hover { background: #4a9e99; }
+
+        .modal-booking .placeholder-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4a8a86;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .modal-booking-info { flex: 1; }
+        .modal-booking-info .name { font-weight: 500; }
+        .modal-booking-info .room { font-size: 12px; color: #888; }
+        .modal-booking-info .dates { font-size: 11px; color: #666; }
+
+        /* ===== TOOLTIP ===== */
+        .tooltip {
+            display: none;
+            position: fixed;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 250px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .tooltip .tooltip-line { padding: 2px 0; }
+        .tooltip .tooltip-line strong { color: #5db5b0; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
@@ -289,19 +656,48 @@
     <!-- ===== HEADER ===== -->
     <div class="header">
         <div class="header-left">
-            <div class="logo">FavHost</div>
-            <div class="nav-links">
-                <span>Dashboard</span>
-                <span class="active">Calendar</span>
-                <span>Reservations</span>
-                <span>Listing</span>
-                <span>Tasks</span>
-                <span>Enquiries (3)</span>
+            <div class="logo">
+                <img src="/media/public/logo.png" alt="Logo"
+                     onerror="this.parentElement.innerHTML='<span class=\'logo-fallback\'>FavH<span class=\'logo-red\'>O</span>st</span>'">
+            </div>
+        </div>
+        <div class="header-center">
+            <a href="/" class="nav-tab">
+                <i class="ti ti-layout-dashboard"></i>
+                <span class="tab-label">Dashboard</span>
+            </a>
+            <a href="/calendar/" class="nav-tab active">
+                <i class="ti ti-calendar"></i>
+                <span class="tab-label">Calendar</span>
+            </a>
+            <div class="nav-tab">
+                <i class="ti ti-file-text"></i>
+                <span class="tab-label">Reservations</span>
+            </div>
+            <div class="nav-tab">
+                <i class="ti ti-building"></i>
+                <span class="tab-label">Listing</span>
+            </div>
+            <div class="nav-tab">
+                <i class="ti ti-checkbox"></i>
+                <span class="tab-label">Tasks</span>
+            </div>
+            <div class="nav-tab">
+                <i class="ti ti-mail"></i>
+                <span class="tab-label">Enquiries </span>
             </div>
         </div>
         <div class="header-right">
-            <button class="btn-new">New +</button>
-            <div class="avatar-small">S</div>
+            <div class="new-btn-wrapper">
+                <button class="btn-new">New <i class="ti ti-chevron-down"></i></button>
+                <div class="new-dropdown" id="newDropdown">
+                    <div class="new-dropdown-item" data-type="listing"><i class="ti ti-building"></i> Listing</div>
+                    <div class="new-dropdown-item" data-type="reservation"><i class="ti ti-calendar-check"></i> Reservation</div>
+                </div>
+            </div>
+            <div class="avatar-circle">
+                <i class="ti ti-user"></i>
+            </div>
         </div>
     </div>
 
@@ -311,12 +707,25 @@
             <i class="fas fa-bars"></i>
             <span>Calendar - Timeline view</span>
         </div>
-        <div class="toolbar-left">
-            <div class="date-nav">
-                <i class="fas fa-chevron-left"></i>
-                <span id="monthLabel">February 2026</span>
-                <i class="fas fa-chevron-right"></i>
-                <i class="fas fa-calendar-alt" style="margin-left:8px;"></i>
+        <div class="toolbar-center-wrapper">
+            <div class="toolbar-pill">
+                <button class="pill-btn" id="prevMonth"><i class="ti ti-circle-arrow-left"></i></button>
+                <span id="monthLabel"></span>
+                <button class="pill-btn" id="nextMonth"><i class="ti ti-circle-arrow-right"></i></button>
+                <div class="pill-divider"></div>
+                <button class="pill-btn" id="calendarTrigger"><i class="ti ti-calendar-month"></i></button>
+                <div class="calendar-dropdown" id="calendarDropdown">
+                    <div class="cd-header">
+                        <i class="fas fa-chevron-left" id="cdPrev"></i>
+                        <span id="cdMonthLabel"></span>
+                        <select id="cdYearSelect"></select>
+                        <i class="fas fa-chevron-right" id="cdNext"></i>
+                    </div>
+                    <div class="cd-weekdays">
+                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                    </div>
+                    <div class="cd-grid" id="cdGrid"></div>
+                </div>
             </div>
         </div>
         <div class="toolbar-right">
@@ -353,13 +762,44 @@
 
         <!-- ===== CALENDAR PANEL ===== -->
         <div class="calendar-panel">
-            <div class="calendar-month-label">March 2018</div>
             <div id="calendarContainer">
                 <!-- Calendar will be rendered by JavaScript -->
             </div>
         </div>
 
     </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-title" id="modalTitle">Booking Details</div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CREATE MODAL ===== -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <button class="modal-close" id="createModalClose">&times;</button>
+            <div class="modal-title" id="createModalTitle">New</div>
+            <div class="modal-body create-form" id="createModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ===== TOOLTIP ===== -->
+    <div class="tooltip" id="tooltip">
+        <div id="tooltipContent"></div>
+    </div>
+
+    <!-- ===== LISTINGS DATA (JSON, not parsed as JS) ===== -->
+    <script id="listings-data" type="application/json">[
+        {% for listing in listings %}
+        {"id": {{ listing.id }}, "title": "{{ listing.room_title|escapejs }}"}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]</script>
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
@@ -370,6 +810,7 @@
         let currentMonth = parseInt("{{ month|default:1 }}");
         let selectedListingId = null;
         let reservationsData = [];
+        const LISTINGS_DATA = JSON.parse(document.getElementById('listings-data').textContent);
 
         // =============================================
         // CALENDAR RENDERING
@@ -388,7 +829,7 @@
                 monthNames[currentMonth - 1] + ' ' + currentYear;
 
             // Build grid
-            let html = '<div class="calendar-grid">';
+            let html = '<div class="calendar-grid" id="calendarGrid">';
             
             // Day headers
             const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -410,76 +851,6 @@
                 
                 html += `<div class="day-cell ${isToday ? 'today' : ''}" data-day="${day}">`;
                 html += `<div class="day-number">${day}</div>`;
-                
-                // ===== RESERVATION RENDERING =====
-                const dateStr = `${currentYear}-${String(currentMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                
-                // Find reservations that are active on this day
-                const activeReservations = reservationsData.filter(res => {
-                    return dateStr >= res.checkin && dateStr < res.checkout;
-                });
-                
-                // Only render on the checkin date (first day)
-                const startingReservations = activeReservations.filter(res => {
-                    return res.checkin === dateStr;
-                });
-                
-                // Render each reservation as a single continuous bar with proper positioning
-                startingReservations.forEach((res, index) => {
-                    const checkinDate = new Date(res.checkin);
-                    const checkoutDate = new Date(res.checkout);
-                    
-                    // Calculate total days (including partial)
-                    const totalDays = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
-                    
-                    // Position: starts at 50% of checkin day, ends at 50% of checkout day
-                    // Bar width: (totalDays * 100%) - 50% (start offset) + 50% (end offset)
-                    // Simplified: barWidth = totalDays * 100%
-                    const barWidth = totalDays * 100;
-                    
-                    // Calculate left position (starts at 50% of checkin day)
-                    const leftPosition = 50; // percentage
-                    
-                    const initial = res.guest_name.charAt(0).toUpperCase();
-                    const zIndex = index + 1;
-                    
-                    // Calculate top position with stacking for multiple reservations
-                    const topPosition = 25 + (index * 30);
-                    
-                    // Check if this is the last day of the month
-                    const isLastDayOfMonth = day === daysInMonth;
-                    
-                    // Check if reservation extends beyond current month
-                    const extendsBeyondMonth = dateStr < res.checkout && isLastDayOfMonth;
-                    
-                    // Adjust for rightmost edge (last day of month or last day of reservation)
-                    let additionalStyle = '';
-                    if (extendsBeyondMonth) {
-                        // Reservation continues to next month - show with dashed border
-                        additionalStyle = 'border-right: 2px dashed rgba(255,255,255,0.5);';
-                    } else if (dateStr === res.checkout) {
-                        // This is the checkout day - bar should end at 50%
-                        // No special handling needed as bar width already accounts for this
-                    }
-                    
-                    html += `
-                        <div class="reservation-bar" style="
-                            left: ${leftPosition}%;
-                            width: ${barWidth}%;
-                            top: ${topPosition}px;
-                            z-index: ${zIndex};
-                            ${additionalStyle}
-                        ">
-                            ${res.guest_photo ? 
-                                `<img src="${res.guest_photo}" class="guest-avatar">` : 
-                                `<div class="guest-avatar-placeholder">${initial}</div>`
-                            }
-                            <span class="guest-name">${res.guest_name}</span>
-                            <span class="bar-menu"><i class="fas fa-chevron-down"></i></span>
-                        </div>
-                    `;
-                });
-                
                 html += '</div>';
             }
             
@@ -492,6 +863,206 @@
             
             html += '</div>';
             container.innerHTML = html;
+            renderCalendarBars();
+        }
+
+        // =============================================
+        // RENDER SPANNING RESERVATION BARS
+        // =============================================
+        function renderCalendarBars() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+
+            grid.querySelectorAll('.reservation-bar').forEach(el => el.remove());
+
+            const reservations = reservationsData;
+            if (reservations.length === 0) return;
+
+            const checkinCounts = {};
+            for (const res of reservations) {
+                const key = res.checkin;
+                checkinCounts[key] = (checkinCounts[key] || 0) + 1;
+            }
+
+            const gridRect = grid.getBoundingClientRect();
+            const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            const monthStart = new Date(currentYear, currentMonth - 1, 1);
+            const monthEnd = new Date(currentYear, currentMonth, 0);
+
+            for (const res of reservations) {
+                const checkinDate = new Date(res.checkin + 'T00:00:00');
+                const checkoutDate = new Date(res.checkout + 'T00:00:00');
+
+                const startDate = checkinDate < monthStart ? new Date(monthStart) : checkinDate;
+                const endDate = checkoutDate > monthEnd ? new Date(monthEnd) : checkoutDate;
+
+                if (startDate > monthEnd || endDate < monthStart) continue;
+
+                const startDay = startDate.getDate();
+                const endDay = endDate.getDate();
+
+                let currentDay = startDay;
+                while (currentDay <= endDay) {
+                    const cellIndex = firstDay + currentDay - 1;
+                    const row = Math.floor(cellIndex / 7);
+                    const rowEndCell = (row + 1) * 7 - 1;
+                    const rowEndDay = Math.min(rowEndCell - firstDay + 1, endDay);
+
+                    const startCell = grid.querySelector(`.day-cell[data-day="${currentDay}"]`);
+                    const endCell = grid.querySelector(`.day-cell[data-day="${rowEndDay}"]`);
+
+                    if (!startCell || !endCell) {
+                        currentDay = rowEndDay + 1;
+                        continue;
+                    }
+
+                    const startRect = startCell.getBoundingClientRect();
+                    const endRect = endCell.getBoundingClientRect();
+
+                    const barTop = startRect.top - gridRect.top + (startRect.height - 26) / 2;
+
+                    let barLeft, barWidth, barBorderRadius;
+                    const isCheckinSegment = currentDay === startDay;
+                    const isCheckoutSegment = rowEndDay === endDay;
+
+                    if (startCell === endCell) {
+                        const cellDow = new Date(currentYear, currentMonth - 1, currentDay).getDay();
+                        if (isCheckinSegment && !isCheckoutSegment && cellDow === 6) {
+                            barLeft = startRect.left - gridRect.left + startRect.width / 2;
+                            barWidth = startRect.width / 2;
+                            barBorderRadius = '14px 0 0 14px';
+                        } else if (!isCheckinSegment && isCheckoutSegment && cellDow === 0) {
+                            barLeft = startRect.left - gridRect.left;
+                            barWidth = startRect.width / 2;
+                            barBorderRadius = '0 14px 14px 0';
+                        } else if (isCheckinSegment && isCheckoutSegment && cellDow === 6) {
+                            barLeft = startRect.left - gridRect.left + startRect.width / 2;
+                            barWidth = startRect.width / 2;
+                            barBorderRadius = '14px 0 0 14px';
+                        } else if (isCheckinSegment && isCheckoutSegment && cellDow === 0) {
+                            barLeft = startRect.left - gridRect.left;
+                            barWidth = startRect.width / 2;
+                            barBorderRadius = '0 14px 14px 0';
+                        } else {
+                            barLeft = startRect.left - gridRect.left;
+                            barWidth = startRect.width;
+                            barBorderRadius = '';
+                        }
+                    } else {
+                        barLeft = isCheckinSegment ?
+                            startRect.left - gridRect.left + startRect.width / 2 :
+                            startRect.left - gridRect.left;
+                        barWidth = isCheckoutSegment ?
+                            endRect.left - gridRect.left + endRect.width / 2 - barLeft :
+                            endRect.left - gridRect.left + endRect.width - barLeft;
+                        if (isCheckinSegment && isCheckoutSegment) {
+                            barBorderRadius = '14px';
+                        } else if (isCheckinSegment) {
+                            barBorderRadius = '14px 0 0 14px';
+                        } else if (isCheckoutSegment) {
+                            barBorderRadius = '0 14px 14px 0';
+                        } else {
+                            barBorderRadius = '0';
+                        }
+                    }
+
+                    const bar = document.createElement('div');
+                    bar.className = 'reservation-bar';
+
+                    const initial = res.guest_name.charAt(0).toUpperCase();
+                    const checkinExtra = checkinCounts[res.checkin] - 1;
+
+                    bar.innerHTML = `
+                        ${res.guest_photo ? 
+                            `<img src="${res.guest_photo}" class="guest-avatar">` : 
+                            `<div class="guest-avatar-placeholder">${initial}</div>`
+                        }
+                        <span class="guest-name">${res.guest_name}</span>
+                        ${currentDay === startDay && checkinExtra > 0 ? `<span class="count-badge">+${checkinExtra}</span>` : ''}
+                    `;
+
+                    bar.style.left = barLeft + 'px';
+                    bar.style.top = barTop + 'px';
+                    bar.style.width = Math.max(barWidth, 4) + 'px';
+                    bar.style.borderRadius = barBorderRadius;
+
+                    bar.addEventListener('click', function() {
+                        openCalendarModal(res.checkin);
+                    });
+                    bar.addEventListener('mouseenter', function(e) {
+                        showCalendarTooltip(e, res.checkin);
+                    });
+                    bar.addEventListener('mouseleave', hideCalendarTooltip);
+
+                    grid.appendChild(bar);
+
+                    currentDay = rowEndDay + 1;
+                }
+            }
+        }
+
+        // =============================================
+        // MODAL FOR CALENDAR
+        // =============================================
+        function openCalendarModal(checkinDate) {
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            const dayReservations = reservationsData.filter(r => r.checkin === checkinDate);
+
+            modalTitle.textContent = dayReservations.length === 1 ?
+                `Booking - ${dayReservations[0].guest_name}` :
+                `Bookings - ${checkinDate} (${dayReservations.length})`;
+
+            modalBody.innerHTML = dayReservations.map(res => {
+                const initial = res.guest_name.charAt(0).toUpperCase();
+                return `
+                    <div class="modal-booking">
+                        ${res.guest_photo ? 
+                            `<img src="${res.guest_photo}" alt="${res.guest_name}">` : 
+                            `<div class="placeholder-avatar">${initial}</div>`
+                        }
+                        <div class="modal-booking-info">
+                            <div class="name">${res.guest_name}</div>
+                            <div class="room">Room: ${res.room_title}</div>
+                            <div class="dates">${res.checkin} → ${res.checkout}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            modalOverlay.classList.add('active');
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // =============================================
+        // TOOLTIP FOR CALENDAR
+        // =============================================
+        function showCalendarTooltip(event, checkinDate) {
+            const tooltip = document.getElementById('tooltip');
+            const tooltipContent = document.getElementById('tooltipContent');
+
+            const dayReservations = reservationsData.filter(r => r.checkin === checkinDate);
+
+            let html = `<div style="font-weight:600; margin-bottom:4px;">${checkinDate}</div>`;
+            dayReservations.forEach(res => {
+                html += `<div class="tooltip-line"><strong>${res.guest_name}</strong> - ${res.room_title} <span style="font-size:10px; color:#aaa;">${res.checkin} → ${res.checkout}</span></div>`;
+            });
+            tooltipContent.innerHTML = html;
+
+            tooltip.style.display = 'block';
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = (rect.left + rect.width / 2 - 125) + 'px';
+            tooltip.style.top = (rect.bottom + 10) + 'px';
+        }
+
+        function hideCalendarTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
         }
 
         // =============================================
@@ -537,28 +1108,18 @@
         // =============================================
         document.addEventListener('DOMContentLoaded', function() {
             // Left arrow click
-            const leftArrow = document.querySelector('.fa-chevron-left');
-            if (leftArrow) {
-                leftArrow.parentElement.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('fa-chevron-left')) {
-                        currentMonth--;
-                        if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-                        fetchReservations();
-                    }
-                });
-            }
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+                fetchReservations();
+            });
             
             // Right arrow click
-            const rightArrow = document.querySelector('.fa-chevron-right');
-            if (rightArrow) {
-                rightArrow.parentElement.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('fa-chevron-right')) {
-                        currentMonth++;
-                        if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-                        fetchReservations();
-                    }
-                });
-            }
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+                fetchReservations();
+            });
 
             // Search filter
             const searchInput = document.getElementById('searchInput');
@@ -572,6 +1133,172 @@
                 });
             }
 
+            // Modal close
+            document.getElementById('modalClose').addEventListener('click', closeCalendarModal);
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                if (e.target === this) closeCalendarModal();
+            });
+
+            // Reposition bars on resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(renderCalendarBars, 200);
+            });
+
+            // Toggle listings panel
+            document.querySelector('.fa-bars').addEventListener('click', function() {
+                const panel = document.querySelector('.listings-panel');
+                panel.style.display = panel.style.display === 'none' ? '' : 'none';
+                setTimeout(renderCalendarBars, 50);
+            });
+
+            // Calendar dropdown
+            let cdMonth = currentMonth, cdYear = currentYear;
+            const cdDropdown = document.getElementById('calendarDropdown');
+            const cdGrid = document.getElementById('cdGrid');
+            const cdLabel = document.getElementById('cdMonthLabel');
+            const cdYearSelect = document.getElementById('cdYearSelect');
+
+            const baseYear = new Date().getFullYear();
+            for (let y = baseYear - 10; y <= baseYear + 10; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                cdYearSelect.appendChild(opt);
+            }
+            cdYearSelect.addEventListener('change', function() {
+                cdYear = parseInt(this.value);
+                renderMiniCalendar();
+            });
+
+            function renderMiniCalendar() {
+                const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                cdLabel.textContent = monthNames[cdMonth - 1];
+                cdYearSelect.value = cdYear;
+                const firstDay = new Date(cdYear, cdMonth - 1, 1).getDay();
+                const daysInMonth = new Date(cdYear, cdMonth, 0).getDate();
+                const today = new Date();
+                let html = '';
+                for (let i = 0; i < firstDay; i++) {
+                    html += '<span class="cd-empty"></span>';
+                }
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const isToday = d === today.getDate() && cdMonth === today.getMonth() + 1 && cdYear === today.getFullYear();
+                    html += `<span class="${isToday ? 'cd-today' : ''}" data-d="${d}">${d}</span>`;
+                }
+                cdGrid.innerHTML = html;
+            }
+
+            document.getElementById('calendarTrigger').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = cdDropdown.classList.toggle('show');
+                if (isOpen) {
+                    cdMonth = currentMonth;
+                    cdYear = currentYear;
+                    renderMiniCalendar();
+                }
+            });
+
+            document.getElementById('cdPrev').addEventListener('click', function(e) {
+                e.stopPropagation();
+                cdMonth--;
+                if (cdMonth < 1) { cdMonth = 12; cdYear--; }
+                renderMiniCalendar();
+            });
+
+            document.getElementById('cdNext').addEventListener('click', function(e) {
+                e.stopPropagation();
+                cdMonth++;
+                if (cdMonth > 12) { cdMonth = 1; cdYear++; }
+                renderMiniCalendar();
+            });
+
+            cdGrid.addEventListener('click', function(e) {
+                const span = e.target.closest('span');
+                if (span && span.dataset.d) {
+                    currentMonth = cdMonth;
+                    currentYear = cdYear;
+                    cdDropdown.classList.remove('show');
+                    renderCalendar();
+                    fetchReservations();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.toolbar-pill')) {
+                    cdDropdown.classList.remove('show');
+                }
+            });
+
+            // Refresh button
+            document.querySelector('.toolbar-right .fa-sync-alt').addEventListener('click', function() {
+                fetchReservations();
+            });
+
+            // New button dropdown
+            document.querySelector('.btn-new').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('newDropdown').classList.toggle('show');
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.new-btn-wrapper')) {
+                    document.getElementById('newDropdown').classList.remove('show');
+                }
+            });
+
+            document.querySelectorAll('.new-dropdown-item').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    document.getElementById('newDropdown').classList.remove('show');
+                    if (this.dataset.type === 'listing') {
+                        openCreateListing();
+                    } else if (this.dataset.type === 'reservation') {
+                        openCreateReservation();
+                    }
+                });
+            });
+
+            // Create modal close
+            document.getElementById('createModalClose').addEventListener('click', function() {
+                document.getElementById('createModal').classList.remove('active');
+            });
+            document.getElementById('createModal').addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+
+            // Create listing form
+            document.addEventListener('submit', function(e) {
+                if (e.target.id === 'createListingForm') {
+                    e.preventDefault();
+                    const btn = e.target.querySelector('.btn-submit');
+                    btn.textContent = 'Creating...'; btn.disabled = true;
+                    const formData = new FormData(e.target);
+                    fetch('/api/listings/create/', {method: 'POST', body: formData})
+                        .then(r => r.json())
+                        .then(function(data) {
+                            if (data.error) { alert(data.error); btn.textContent = 'Create'; btn.disabled = false; return; }
+                            document.getElementById('createModal').classList.remove('active');
+                            location.reload();
+                        });
+                }
+                if (e.target.id === 'createReservationForm') {
+                    e.preventDefault();
+                    const btn = e.target.querySelector('.btn-submit');
+                    btn.textContent = 'Creating...'; btn.disabled = true;
+                    const formData = new FormData(e.target);
+                    fetch('/api/reservations/create/', {method: 'POST', body: formData})
+                        .then(r => r.json())
+                        .then(function(data) {
+                            if (data.error) { alert(data.error); btn.textContent = 'Create'; btn.disabled = false; return; }
+                            document.getElementById('createModal').classList.remove('active');
+                            fetchReservations();
+                        });
+                }
+            });
+
+            // Render grid immediately, then load data
+            renderCalendar();
+
             // Select first listing by default
             const firstListing = document.querySelector('.listing-item');
             if (firstListing) {
@@ -580,6 +1307,65 @@
                 fetchReservations();
             }
         });
+
+        function openCreateListing() {
+            const modal = document.getElementById('createModal');
+            document.getElementById('createModalTitle').innerHTML = '<i class="ti ti-building" style="margin-right:6px;"></i>New Listing';
+            document.getElementById('createModalBody').innerHTML = `
+                <form id="createListingForm">
+                    <div class="form-group">
+                        <label>Room Title</label>
+                        <input type="text" name="room_title" placeholder="e.g. Deluxe Suite" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Room Image</label>
+                        <input type="file" name="room_image" accept="image/*">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('createModal').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="btn-submit">Create</button>
+                    </div>
+                </form>
+            `;
+            modal.classList.add('active');
+        }
+
+        function openCreateReservation() {
+            const modal = document.getElementById('createModal');
+            document.getElementById('createModalTitle').innerHTML = '<i class="ti ti-calendar-check" style="margin-right:6px;"></i>New Reservation';
+            const options = LISTINGS_DATA.map(function(l) {
+                return '<option value="' + l.id + '">' + l.title + '</option>';
+            }).join('');
+            document.getElementById('createModalBody').innerHTML = `
+                <form id="createReservationForm">
+                    <div class="form-group">
+                        <label>Listing</label>
+                        <select name="listing_id" required>${options}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>Guest Name</label>
+                        <input type="text" name="guest_name" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Guest Photo</label>
+                        <input type="file" name="guest_photo" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Check-in Date</label>
+                        <input type="date" name="checkin_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Check-out Date</label>
+                        <input type="date" name="checkout_date" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('createModal').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="btn-submit">Create</button>
+                    </div>
+                </form>
+            `;
+            modal.classList.add('active');
+        }
     </script>
 
 </body>
